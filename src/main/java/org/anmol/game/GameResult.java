@@ -1,4 +1,4 @@
-package org.anmol;
+package org.anmol.game;
 
 public class GameResult {
     boolean isOver;

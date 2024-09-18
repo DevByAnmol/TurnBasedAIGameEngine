@@ -1,9 +1,12 @@
-package org.anmol;
+package org.anmol.api;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello world!");
-    }
+import org.anmol.boards.TicTacToeBoard;
+import org.anmol.game.Board;
+import org.anmol.game.GameResult;
+import org.anmol.game.Move;
+import org.anmol.game.Player;
+
+public class GameEngine {
 
     public Board start() {
         return new Board();
@@ -20,9 +23,9 @@ public class Main {
             boolean rowComplete = true;
             for (int i = 0; i < 3; i++) {
                 rowComplete = true;
-                firstCharacter = board1.cells[i][0];
+                firstCharacter = board1.getCell(i, 0);
                 for (int j = 1; j < 3; j++) {
-                    if (!board1.cells[i][j].equals(firstCharacter)) {
+                    if (!board1.getCell(i, j).equals(firstCharacter)) {
                         rowComplete = false;
                         break;
                     }
@@ -39,9 +42,9 @@ public class Main {
             boolean colComplete = true;
             for (int i = 0; i < 3; i++) {
                 colComplete = true;
-                firstCharacter = board1.cells[0][i];
+                firstCharacter = board1.getCell(0, i);
                 for (int j = 1; j < 3; j++) {
-                    if (!board1.cells[j][i].equals(firstCharacter)) {
+                    if (!board1.getCell(j, i).equals(firstCharacter)) {
                         colComplete = false;
                         break;
                     }
@@ -57,8 +60,8 @@ public class Main {
 
             boolean diagonalComplete = true;
             for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.cells[0][0];
-                if (!board1.cells[i][i].equals(firstCharacter)) {
+                firstCharacter = board1.getCell(0, 0);
+                if (!board1.getCell(i, i).equals(firstCharacter)) {
                     diagonalComplete = false;
                     break;
                 }
@@ -70,8 +73,8 @@ public class Main {
 
             boolean reverseDiagonalComplete = true;
             for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.cells[0][2];
-                if (!board1.cells[i][2 - i].equals(firstCharacter)) {
+                firstCharacter = board1.getCell(0, 2);
+                if (!board1.getCell(i, 2 - i).equals(firstCharacter)) {
                     reverseDiagonalComplete = false;
                     break;
                 }
@@ -85,7 +88,7 @@ public class Main {
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (board1.cells[i][j] != null) countOfFilledCells++;
+                    if (board1.getCell(i, j) != null) countOfFilledCells++;
                 }
             }
 
