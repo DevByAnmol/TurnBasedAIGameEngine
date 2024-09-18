@@ -8,12 +8,20 @@ import org.anmol.game.Player;
 
 public class GameEngine {
 
-    public Board start() {
-        return new Board();
+    public Board start(String type) {
+        if (type.equals("TicTacToe")) {
+            return new TicTacToeBoard();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public void move(Board board, Player player, Move move) {
-
+        if (board instanceof TicTacToeBoard board1) {
+            board1.setCell(Move.getCell(), player.getSymbol());
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public GameResult isComplete(Board board) {
