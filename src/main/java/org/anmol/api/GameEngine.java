@@ -1,10 +1,7 @@
 package org.anmol.api;
 
 import org.anmol.boards.TicTacToeBoard;
-import org.anmol.game.Board;
-import org.anmol.game.GameResult;
-import org.anmol.game.Move;
-import org.anmol.game.Player;
+import org.anmol.game.*;
 
 public class GameEngine {
 
@@ -30,12 +27,14 @@ public class GameEngine {
 
             boolean rowComplete = true;
             for (int i = 0; i < 3; i++) {
-                rowComplete = true;
                 firstCharacter = board1.getCell(i, 0);
-                for (int j = 1; j < 3; j++) {
-                    if (!board1.getCell(i, j).equals(firstCharacter)) {
-                        rowComplete = false;
-                        break;
+                rowComplete = firstCharacter != null;
+                if (firstCharacter != null) {
+                    for (int j = 1; j < 3; j++) {
+                        if (!firstCharacter.equals(board1.getCell(i, j))) {
+                            rowComplete = false;
+                            break;
+                        }
                     }
                 }
                 if (rowComplete) {
@@ -49,12 +48,14 @@ public class GameEngine {
 
             boolean colComplete = true;
             for (int i = 0; i < 3; i++) {
-                colComplete = true;
                 firstCharacter = board1.getCell(0, i);
-                for (int j = 1; j < 3; j++) {
-                    if (!board1.getCell(j, i).equals(firstCharacter)) {
-                        colComplete = false;
-                        break;
+                colComplete = firstCharacter != null;
+                if (firstCharacter != null) {
+                    for (int j = 1; j < 3; j++) {
+                        if (!firstCharacter.equals(board1.getCell(j, i))) {
+                            colComplete = false;
+                            break;
+                        }
                     }
                 }
                 if (colComplete) {
@@ -66,10 +67,10 @@ public class GameEngine {
                 return new GameResult(true, firstCharacter);
             }
 
-            boolean diagonalComplete = true;
+            firstCharacter = board1.getCell(0, 0);
+            boolean diagonalComplete = firstCharacter != null;
             for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.getCell(0, 0);
-                if (!board1.getCell(i, i).equals(firstCharacter)) {
+                if (firstCharacter != null && !firstCharacter.equals(board1.getCell(i, i))) {
                     diagonalComplete = false;
                     break;
                 }
@@ -79,10 +80,10 @@ public class GameEngine {
                 return new GameResult(true, firstCharacter);
             }
 
-            boolean reverseDiagonalComplete = true;
+            firstCharacter = board1.getCell(0, 2);
+            boolean reverseDiagonalComplete = firstCharacter != null;
             for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.getCell(0, 2);
-                if (!board1.getCell(i, 2 - i).equals(firstCharacter)) {
+                if (firstCharacter != null && !firstCharacter.equals(board1.getCell(i, 2 - i))) {
                     reverseDiagonalComplete = false;
                     break;
                 }
@@ -107,6 +108,21 @@ public class GameEngine {
             }
         } else {
             return new GameResult(false, "-");
+        }
+    }
+
+    public Move suggestMove(Player computer, Board board) {
+        if (board instanceof TicTacToeBoard board1) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (board1.getCell(i, j) == null) {
+                        return new Move(new Cell(i, j));
+                    }
+                }
+            }
+            throw new IllegalStateException();
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 }
