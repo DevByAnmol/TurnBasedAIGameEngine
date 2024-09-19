@@ -4,16 +4,20 @@ import org.anmol.game.Board;
 import org.anmol.game.Cell;
 import org.anmol.game.Move;
 
-public class TicTacToeBoard extends Board {
+public class TicTacToeBoard implements Board {
 
     String[][] cells = new String[3][3];
 
-    public String getCell(int row, int col) {
+    public String getSymbol(int row, int col) {
         return cells[row][col];
     }
 
     public void setCell(Cell cell, String symbol) {
-        cells[cell.getRow()][cell.getCol()] = symbol;
+        if (cells[cell.getRow()][cell.getCol()] == null) {
+            cells[cell.getRow()][cell.getCol()] = symbol;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
@@ -31,5 +35,14 @@ public class TicTacToeBoard extends Board {
     @Override
     public void move(Move move) {
         setCell(move.getCell(), move.getPlayer().getSymbol());
+    }
+
+    @Override
+    public TicTacToeBoard getCopy() {
+        TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(cells[i], 0, ticTacToeBoard.cells[i], 0, 3);
+        }
+        return ticTacToeBoard;
     }
 }

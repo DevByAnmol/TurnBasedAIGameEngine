@@ -1,4 +1,3 @@
-import org.anmol.api.AIEngine;
 import org.anmol.api.GameEngine;
 import org.anmol.api.RuleEngine;
 import org.anmol.game.Board;
@@ -15,13 +14,11 @@ public class GamePlayTest {
 
     GameEngine gameEngine;
     RuleEngine ruleEngine;
-    AIEngine aiEngine;
 
     @BeforeEach
     public void setup() {
         gameEngine = new GameEngine();
         ruleEngine = new RuleEngine();
-        aiEngine = new AIEngine();
     }
 
     @Test
@@ -29,8 +26,9 @@ public class GamePlayTest {
         Board board = gameEngine.start("TicTacToe");
 
         // make moves
-        int[][] moves = new int[][]{{1, 0}, {1, 1}, {1, 2}};
-        playGame(board, moves);
+        int[][] firstPlayerMoves = new int[][]{{1, 0}, {1, 1}, {1, 2}};
+        int[][] secondPlayerMoves = new int[][]{{0, 0}, {2, 1}, {0, 2}};
+        playGame(board, firstPlayerMoves, secondPlayerMoves);
         assertTrue(ruleEngine.getState(board).isOver());
         assertEquals(ruleEngine.getState(board).getWinner(), "X");
     }
@@ -40,8 +38,9 @@ public class GamePlayTest {
         Board board = gameEngine.start("TicTacToe");
 
         // make moves
-        int[][] moves = new int[][]{{0, 1}, {1, 1}, {2, 1}};
-        playGame(board, moves);
+        int[][] firstPlayerMoves = new int[][]{{0, 1}, {1, 1}, {2, 1}};
+        int[][] secondPlayerMoves = new int[][]{{1, 0}, {1, 2}, {0, 2}};
+        playGame(board, firstPlayerMoves, secondPlayerMoves);
         assertTrue(ruleEngine.getState(board).isOver());
         assertEquals(ruleEngine.getState(board).getWinner(), "X");
     }
@@ -51,8 +50,9 @@ public class GamePlayTest {
         Board board = gameEngine.start("TicTacToe");
 
         // make moves
-        int[][] moves = new int[][]{{0, 0}, {1, 1}, {2, 2}};
-        playGame(board, moves);
+        int[][] firstPlayerMoves = new int[][]{{0, 0}, {1, 1}, {2, 2}};
+        int[][] secondPlayerMoves = new int[][]{{1, 0}, {2, 1}, {1, 2}};
+        playGame(board, firstPlayerMoves, secondPlayerMoves);
         assertTrue(ruleEngine.getState(board).isOver());
         assertEquals(ruleEngine.getState(board).getWinner(), "X");
     }
@@ -62,38 +62,41 @@ public class GamePlayTest {
         Board board = gameEngine.start("TicTacToe");
 
         // make moves
-        int[][] moves = new int[][]{{0, 2}, {1, 1}, {2, 0}};
-        playGame(board, moves);
+        int[][] firstPlayerMoves = new int[][]{{0, 2}, {1, 1}, {2, 0}};
+        int[][] secondPlayerMoves = new int[][]{{1, 0}, {2, 1}, {1, 2}};
+        playGame(board, firstPlayerMoves, secondPlayerMoves);
         assertTrue(ruleEngine.getState(board).isOver());
         assertEquals(ruleEngine.getState(board).getWinner(), "X");
     }
 
     @Test
-    public void checkForComputerWin() {
+    public void checkForSecondPlayerWin() {
         Board board = gameEngine.start("TicTacToe");
 
         // make moves
-        int[][] moves = new int[][]{{1, 0}, {1, 1}, {2, 0}};
-        playGame(board, moves);
+        int[][] firstPlayerMoves = new int[][]{{1, 0}, {1, 1}, {2, 0}};
+        int[][] secondPlayerMoves = new int[][]{{0, 0}, {0, 1}, {0, 2}};
+        playGame(board, firstPlayerMoves, secondPlayerMoves);
         assertTrue(ruleEngine.getState(board).isOver());
         assertEquals(ruleEngine.getState(board).getWinner(), "O");
     }
 
-    private void playGame(Board board, int[][] moves) {
-        int row, col;
-        int next=0;
+    private void playGame(Board board, int[][] firstPlayerMoves, int[][] secondPlayerMoves) {
+        int next = 0;
         while (!ruleEngine.getState(board).isOver()) {
-            Player player = new Player("X");
-            row = moves[next][0];
-            col = moves[next][1];
+            Player firstPlayer = new Player("X");
+            int row = firstPlayerMoves[next][0];
+            int col = firstPlayerMoves[next][1];
 
-            Move playerMove = new Move(new Cell(row, col), player);
-            gameEngine.move(board, playerMove);
+            Move firstPlayerMove = new Move(new Cell(row, col), firstPlayer);
+            gameEngine.move(board, firstPlayerMove);
 
-            Player computer = new Player("O");
+            Player secondPlayer = new Player("O");
             if (!ruleEngine.getState(board).isOver()) {
-                Move computerMove = aiEngine.suggestMove(computer, board);
-                gameEngine.move(board, computerMove);
+                int sRow = secondPlayerMoves[next][0];
+                int sCol = secondPlayerMoves[next][1];
+                Move secondPlayerMove = new Move(new Cell(sRow, sCol), secondPlayer);
+                gameEngine.move(board, secondPlayerMove);
             }
 
             next++;
