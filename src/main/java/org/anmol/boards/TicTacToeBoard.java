@@ -2,6 +2,7 @@ package org.anmol.boards;
 
 import org.anmol.game.Board;
 import org.anmol.game.Cell;
+import org.anmol.game.Move;
 
 public class TicTacToeBoard extends Board {
 
@@ -25,5 +26,10 @@ public class TicTacToeBoard extends Board {
             result.append("\n");
         }
         return result.toString();
+    }
+
+    @Override
+    public void move(Move move) {
+        setCell(move.getCell(), move.getPlayer().getSymbol());
     }
 }

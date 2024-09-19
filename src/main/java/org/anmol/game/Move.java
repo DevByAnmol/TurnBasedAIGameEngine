@@ -1,14 +1,20 @@
 package org.anmol.game;
 
 public class Move {
-    private static Cell cell;
+    private  Cell cell;
+    private Player player;
 
-    public Move(Cell cell) {
-        Move.cell = cell;
+    public Move(Cell cell, Player player) {
+        this.cell = cell;
+        this.player = player;
     }
 
-    public static Cell getCell() {
+    public Cell getCell() {
         return cell;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }
 

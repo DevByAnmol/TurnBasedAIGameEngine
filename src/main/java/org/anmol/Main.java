@@ -1,6 +1,8 @@
 package org.anmol;
 
+import org.anmol.api.AIEngine;
 import org.anmol.api.GameEngine;
+import org.anmol.api.RuleEngine;
 import org.anmol.game.Board;
 import org.anmol.game.Cell;
 import org.anmol.game.Move;
@@ -11,13 +13,15 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         GameEngine gameEngine = new GameEngine();
+        RuleEngine ruleEngine = new RuleEngine();
+        AIEngine aiEngine = new AIEngine();
         Board board = gameEngine.start("TicTacToe");
 
         Scanner scanner = new Scanner(System.in);
 
         // make moves in a loop
 
-        while (!gameEngine.isComplete(board).isOver()) {
+        while (!ruleEngine.getState(board).isOver()) {
             System.out.println("Make your move!");
             System.out.println(board);
 
@@ -25,19 +29,19 @@ public class Main {
 
             int row = scanner.nextInt();
             int col = scanner.nextInt();
-            Move playerMove = new Move(new Cell(row, col));
-            gameEngine.move(board, player, playerMove);
+            Move playerMove = new Move(new Cell(row, col), player);
+            gameEngine.move(board, playerMove);
 
             System.out.println(board);
 
             Player computer = new Player("O");
-            if (!gameEngine.isComplete(board).isOver()) {
-                Move computerMove = gameEngine.suggestMove(computer, board);
-                gameEngine.move(board, computer, computerMove);
+            if (!ruleEngine.getState(board).isOver()) {
+                Move computerMove = aiEngine.suggestMove(computer, board);
+                gameEngine.move(board, computerMove);
             }
         }
 
-        System.out.println("Game Result : " + gameEngine.isComplete(board).getWinner());
+        System.out.println("Game Result : " + ruleEngine.getState(board).getWinner());
         System.out.println(board);
     }
 }
