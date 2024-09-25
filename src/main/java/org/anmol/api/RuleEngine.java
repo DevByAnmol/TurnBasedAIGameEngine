@@ -4,53 +4,19 @@ import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.Board;
 import org.anmol.game.GameState;
 
+import java.util.function.BiFunction;
+
 public class RuleEngine {
 
     public GameState getState(Board board) {
         if (board instanceof TicTacToeBoard board1) {
             String firstCharacter = "-";
 
-            boolean rowComplete = true;
-            for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.getSymbol(i, 0);
-                rowComplete = firstCharacter != null;
-                if (firstCharacter != null) {
-                    for (int j = 1; j < 3; j++) {
-                        if (!firstCharacter.equals(board1.getSymbol(i, j))) {
-                            rowComplete = false;
-                            break;
-                        }
-                    }
-                }
-                if (rowComplete) {
-                    break;
-                }
-            }
+            GameState rowWin = isVictory((i, j) -> board1.getSymbol(i, j));
+            if (rowWin != null) return rowWin;
 
-            if (rowComplete) {
-                return new GameState(true, firstCharacter);
-            }
-
-            boolean colComplete = true;
-            for (int i = 0; i < 3; i++) {
-                firstCharacter = board1.getSymbol(0, i);
-                colComplete = firstCharacter != null;
-                if (firstCharacter != null) {
-                    for (int j = 1; j < 3; j++) {
-                        if (!firstCharacter.equals(board1.getSymbol(j, i))) {
-                            colComplete = false;
-                            break;
-                        }
-                    }
-                }
-                if (colComplete) {
-                    break;
-                }
-            }
-
-            if (colComplete) {
-                return new GameState(true, firstCharacter);
-            }
+            GameState colWin = isVictory((i, j) -> board1.getSymbol(j, i));
+            if (colWin != null) return colWin;
 
             firstCharacter = board1.getSymbol(0, 0);
             boolean diagonalComplete = firstCharacter != null;
@@ -94,5 +60,23 @@ public class RuleEngine {
         } else {
             return new GameState(false, "-");
         }
+    }
+
+    private GameState isVictory(BiFunction<Integer, Integer, String> next) {
+        for (int i = 0; i < 3; i++) {
+            boolean possibleStreak = true;
+
+            for (int j = 1; j < 3; j++) {
+                if (next.apply(i, j) == null || !next.apply(i, 0).equals(next.apply(i, j))) {
+                    possibleStreak = false;
+                    break;
+                }
+            }
+
+            if (possibleStreak) {
+                return new GameState(true, next.apply(i, 0));
+            }
+        }
+        return null;
     }
 }
