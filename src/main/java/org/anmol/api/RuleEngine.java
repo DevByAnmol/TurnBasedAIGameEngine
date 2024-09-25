@@ -5,6 +5,7 @@ import org.anmol.game.Board;
 import org.anmol.game.GameState;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class RuleEngine {
 
@@ -12,40 +13,19 @@ public class RuleEngine {
         if (board instanceof TicTacToeBoard board1) {
             String firstCharacter = "-";
 
-            GameState rowWin = isVictory((i, j) -> board1.getSymbol(i, j));
+            GameState rowWin = findStreak((i, j) -> board1.getSymbol(i, j));
             if (rowWin != null) return rowWin;
 
-            GameState colWin = isVictory((i, j) -> board1.getSymbol(j, i));
+            GameState colWin = findStreak((i, j) -> board1.getSymbol(j, i));
             if (colWin != null) return colWin;
 
-            firstCharacter = board1.getSymbol(0, 0);
-            boolean diagonalComplete = firstCharacter != null;
-            for (int i = 0; i < 3; i++) {
-                if (firstCharacter != null && !firstCharacter.equals(board1.getSymbol(i, i))) {
-                    diagonalComplete = false;
-                    break;
-                }
-            }
+            GameState diagonalWin = findDiagonalStreak(i -> board1.getSymbol(i, i));
+            if (diagonalWin != null) return diagonalWin;
 
-            if (diagonalComplete) {
-                return new GameState(true, firstCharacter);
-            }
-
-            firstCharacter = board1.getSymbol(0, 2);
-            boolean reverseDiagonalComplete = firstCharacter != null;
-            for (int i = 0; i < 3; i++) {
-                if (firstCharacter != null && !firstCharacter.equals(board1.getSymbol(i, 2 - i))) {
-                    reverseDiagonalComplete = false;
-                    break;
-                }
-            }
-            if (reverseDiagonalComplete) {
-                return new GameState(true, firstCharacter);
-            }
-
+            GameState reverseDiagonalWin = findDiagonalStreak(i -> board1.getSymbol(i, 2 - i));
+            if (reverseDiagonalWin != null) return reverseDiagonalWin;
 
             int countOfFilledCells = 0;
-
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     if (board1.getSymbol(i, j) != null) countOfFilledCells++;
@@ -62,11 +42,25 @@ public class RuleEngine {
         }
     }
 
-    private GameState isVictory(BiFunction<Integer, Integer, String> next) {
+    private GameState findDiagonalStreak(Function<Integer, String> diag) {
+        boolean possibleStreak = true;
+        for (int i = 0; i < 3; i++) {
+            if (diag.apply(0) != null && !diag.apply(0).equals(diag.apply(i))) {
+                possibleStreak = false;
+                break;
+            }
+        }
+
+        if (possibleStreak) {
+            return new GameState(true, diag.apply(0));
+        }
+        return null;
+    }
+
+    private GameState findStreak(BiFunction<Integer, Integer, String> next) {
         for (int i = 0; i < 3; i++) {
             boolean possibleStreak = true;
-
-            for (int j = 1; j < 3; j++) {
+            for (int j = 0; j < 3; j++) {
                 if (next.apply(i, j) == null || !next.apply(i, 0).equals(next.apply(i, j))) {
                     possibleStreak = false;
                     break;
