@@ -1,48 +1,96 @@
 package org.anmol.api;
 
 import org.anmol.boards.TicTacToeBoard;
-import org.anmol.game.Board;
-import org.anmol.game.GameState;
+import org.anmol.game.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class RuleEngine {
+    Map<String, List<Rule<TicTacToeBoard>>> ruleMap = new HashMap<>();
 
-    public GameState getState(Board board) {
-        if (board instanceof TicTacToeBoard board1) {
-            String firstCharacter = "-";
-
-            GameState rowWin = outerTraversal((i, j) -> board1.getSymbol(i, j));
-            if (rowWin.isOver()) return rowWin;
-
-            GameState colWin = outerTraversal((i, j) -> board1.getSymbol(j, i));
-            if (colWin.isOver()) return colWin;
-
-            GameState diagonalWin = traverse(i -> board1.getSymbol(i, i));
-            if (diagonalWin.isOver()) return diagonalWin;
-
-            GameState reverseDiagonalWin = traverse(i -> board1.getSymbol(i, 2 - i));
-            if (reverseDiagonalWin.isOver()) return reverseDiagonalWin;
-
+    public RuleEngine() {
+        String key = TicTacToeBoard.class.getName();
+        ruleMap.put(key, new ArrayList<>());
+        ruleMap.get(key).add(new Rule<>(board -> outerTraversals((i, j) -> board.getSymbol(i, j))));
+        ruleMap.get(key).add(new Rule<>(board -> outerTraversals((i, j) -> board.getSymbol(j, i))));
+        ruleMap.get(key).add(new Rule<>(board -> traverse(i -> board.getSymbol(i, i))));
+        ruleMap.get(key).add(new Rule<>(board -> traverse(i -> board.getSymbol(i, 2 - i))));
+        ruleMap.get(key).add(new Rule<>(board -> {
             int countOfFilledCells = 0;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (board1.getSymbol(i, j) != null) countOfFilledCells++;
+                    if (board.getSymbol(i, j) != null) countOfFilledCells++;
                 }
             }
 
             if (countOfFilledCells == 9) {
                 return new GameState(true, "-");
-            } else {
-                return new GameState(false, "-");
             }
-        } else {
             return new GameState(false, "-");
+        }));
+    }
+
+    public GameInfo getInfo(Board board) {
+        if (board instanceof TicTacToeBoard board1) {
+            GameState gameState = getState(board);
+            /*
+            X-O
+            -O-
+            X-X
+             */
+            String[] players = new String[]{"X", "O"};
+            for (int index = 0; index < 2; index++) {
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        Board b = board1.getCopy();
+                        Player player = new Player(players[index]);
+                        b.move(new Move(new Cell(i, j), player));
+                        boolean canStillWin = false;
+                        for (int k = 0; k < 3; k++) {
+                            for (int l = 0; l < 3; l++) {
+                                Board b1 = board.getCopy();
+                                b1.move(new Move(new Cell(k, l), player.flip()));
+                                if (getState(b1).getWinner().equals(player.flip().getSymbol())) {
+                                    canStillWin = true;
+                                    break;
+                                }
+                            }
+                            if (canStillWin) {
+                                break;
+                            }
+                        }
+                        if (canStillWin) {
+                            return new GameInfo(gameState, true, player.flip());
+                        }
+                    }
+                }
+            }
+            return new GameInfo(gameState, false, null);
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
-    private GameState outerTraversal(BiFunction<Integer, Integer, String> next) {
+    public GameState getState(Board board) {
+        if (board instanceof TicTacToeBoard board1) {
+            for (Rule<TicTacToeBoard> r : ruleMap.get(TicTacToeBoard.class.getName())) {
+                GameState gameState = r.condition.apply(board1);
+                if (gameState.isOver()) {
+                    return gameState;
+                }
+            }
+            return new GameState(false, "-");
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private GameState outerTraversals(BiFunction<Integer, Integer, String> next) {
         GameState result = new GameState(false, "-");
         for (int i = 0; i < 3; i++) {
             final int ii = i;
@@ -69,5 +117,13 @@ public class RuleEngine {
             result = new GameState(true, traversal.apply(0));
         }
         return result;
+    }
+}
+
+class Rule<T extends Board> {
+    Function<T, GameState> condition;
+
+    public Rule(Function<T, GameState> condition) {
+        this.condition = condition;
     }
 }
