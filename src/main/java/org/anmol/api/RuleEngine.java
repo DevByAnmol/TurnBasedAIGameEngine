@@ -5,8 +5,6 @@ import org.anmol.game.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class RuleEngine {
     Map<String, RuleSet<TicTacToeBoard>> ruleMap = new HashMap<>();
