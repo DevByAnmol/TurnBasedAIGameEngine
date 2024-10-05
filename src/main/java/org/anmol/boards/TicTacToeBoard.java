@@ -1,5 +1,6 @@
 package org.anmol.boards;
 
+import org.anmol.api.Rule;
 import org.anmol.api.RuleSet;
 import org.anmol.game.Board;
 import org.anmol.game.Cell;
