@@ -21,6 +21,4 @@ public class GameEngine {
             throw new IllegalArgumentException();
         }
     }
-
-
 }

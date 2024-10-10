@@ -1,58 +1,53 @@
 package org.anmol.api;
 
 import org.anmol.boards.Board;
+import org.anmol.boards.CellBoard;
 import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.*;
+import org.anmol.placements.DefensivePlacement;
+import org.anmol.placements.OffensivePlacement;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.anmol.boards.TicTacToeBoard.Symbol;
+import static org.anmol.boards.TicTacToeBoard.getRules;
 
 public class RuleEngine {
     Map<String, RuleSet<TicTacToeBoard>> ruleMap = new HashMap<>();
 
     public RuleEngine() {
-        ruleMap.put(TicTacToeBoard.class.getName(), TicTacToeBoard.getRules());
+        ruleMap.put(TicTacToeBoard.class.getName(), getRules());
     }
 
-    public GameInfo getInfo(Board board) {
-        if (board instanceof TicTacToeBoard board1) {
-            GameState gameState = getState(board);
-            /*
-            X-O
-            -O-
-            X-X
-             */
-            String[] players = new String[]{"X", "O"};
-            Cell forkCell = null;
-            for (int index = 0; index < 2; index++) {
+    public GameInfo getInfo(CellBoard board) {
+        if (board instanceof TicTacToeBoard ticTacToeBoard) {
+            GameState gameState = getState(ticTacToeBoard);
+            for (Symbol symbol : Symbol.values()) {
+                Player player = new Player(symbol.marker());
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
-                        Board b = board1.getCopy();
-                        Player player = new Player(players[index]);
-                        b.move(new Move(new Cell(i, j), player));
-                        boolean canStillWin = false;
-                        for (int k = 0; k < 3; k++) {
-                            for (int l = 0; l < 3; l++) {
-                                Board b1 = board.getCopy();
-                                forkCell = new Cell(k, l);
-                                b1.move(new Move(forkCell, player.flip()));
-                                if (getState(b1).getWinner().equals(player.flip().getSymbol())) {
-                                    canStillWin = true;
-                                    break;
+                        if (ticTacToeBoard.getSymbol(i, j) == null) {
+                            TicTacToeBoard b = ticTacToeBoard.move(new Move(new Cell(i, j), player));
+                            // force opponent to make a defensive move
+                            // we can still win after that move
+                            DefensivePlacement defense = DefensivePlacement.get();
+                            Optional<Cell> defensiveCell = defense.place(b, player.flip());
+                            if (defensiveCell.isPresent()) {
+                                b = ticTacToeBoard.move(new Move(defensiveCell.get(), player));
+                                OffensivePlacement offense = OffensivePlacement.get();
+                                Optional<Cell> offensiveCell = offense.place(b, player);
+                                if (offensiveCell.isPresent()) {
+                                    return new GameInfoBuilder()
+                                            .isOver(gameState.isOver())
+                                            .winner(gameState.getWinner())
+                                            .hasFork(true)
+                                            .forkCell(new Cell(i, j))
+                                            .player(player.flip())
+                                            .build();
                                 }
                             }
-                            if (canStillWin) {
-                                break;
-                            }
-                        }
-                        if (canStillWin) {
-                            return new GameInfoBuilder()
-                                    .isOver(gameState.isOver())
-                                    .winner(gameState.getWinner())
-                                    .hasFork(true)
-                                    .forkCell(forkCell)
-                                    .player(player.flip())
-                                    .build();
                         }
                     }
                 }
