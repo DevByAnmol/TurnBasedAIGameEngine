@@ -1,7 +1,7 @@
 package org.anmol.game;
 
 public class Move {
-    private  Cell cell;
+    private Cell cell;
     private Player player;
 
     public Move(Cell cell, Player player) {

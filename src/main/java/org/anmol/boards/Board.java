@@ -1,4 +1,6 @@
-package org.anmol.game;
+package org.anmol.boards;
+
+import org.anmol.game.Move;
 
 public interface Board {
     void move(Move move);

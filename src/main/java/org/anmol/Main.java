@@ -3,7 +3,7 @@ package org.anmol;
 import org.anmol.api.AIEngine;
 import org.anmol.api.GameEngine;
 import org.anmol.api.RuleEngine;
-import org.anmol.game.Board;
+import org.anmol.boards.Board;
 import org.anmol.game.Cell;
 import org.anmol.game.Move;
 import org.anmol.game.Player;

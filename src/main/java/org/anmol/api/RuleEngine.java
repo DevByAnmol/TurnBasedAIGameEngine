@@ -1,5 +1,6 @@
 package org.anmol.api;
 
+import org.anmol.boards.Board;
 import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.*;
 
@@ -10,7 +11,6 @@ public class RuleEngine {
     Map<String, RuleSet<TicTacToeBoard>> ruleMap = new HashMap<>();
 
     public RuleEngine() {
-        String key = TicTacToeBoard.class.getName();
         ruleMap.put(TicTacToeBoard.class.getName(), TicTacToeBoard.getRules());
     }
 
@@ -68,7 +68,7 @@ public class RuleEngine {
 
     public GameState getState(Board board) {
         if (board instanceof TicTacToeBoard board1) {
-            for (Rule<TicTacToeBoard> r : ruleMap.get(TicTacToeBoard.class.getName())) {
+            for (Rule r : ruleMap.get(TicTacToeBoard.class.getName())) {
                 GameState gameState = r.condition.apply(board1);
                 if (gameState.isOver()) {
                     return gameState;

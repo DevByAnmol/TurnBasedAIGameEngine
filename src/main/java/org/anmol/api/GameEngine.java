@@ -1,5 +1,6 @@
 package org.anmol.api;
 
+import org.anmol.boards.Board;
 import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.*;
 
@@ -15,7 +16,7 @@ public class GameEngine {
 
     public void move(Board board, Move move) {
         if (board instanceof TicTacToeBoard board1) {
-            board.move(move);
+            board1.move(move);
         } else {
             throw new IllegalArgumentException();
         }

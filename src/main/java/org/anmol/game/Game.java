@@ -1,5 +1,7 @@
 package org.anmol.game;
 
+import org.anmol.boards.Board;
+
 public class Game {
     Player winner;
     private GameConfig gameConfig;
