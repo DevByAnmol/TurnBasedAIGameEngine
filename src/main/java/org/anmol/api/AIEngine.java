@@ -40,6 +40,7 @@ public class AIEngine {
                 return place.get();
             }
             placement = placement.next();
+
         }
         return null;
     }
