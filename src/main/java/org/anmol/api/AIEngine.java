@@ -1,9 +1,14 @@
 package org.anmol.api;
 
 import org.anmol.boards.TicTacToeBoard;
-import org.anmol.game.*;
+import org.anmol.game.Board;
+import org.anmol.game.Cell;
+import org.anmol.game.Move;
+import org.anmol.game.Player;
 import org.anmol.placements.OffensivePlacement;
 import org.anmol.placements.Placement;
+
+import java.util.Optional;
 
 public class AIEngine {
 
@@ -28,29 +33,13 @@ public class AIEngine {
     }
 
     private Cell getOptimalMove(Player player, TicTacToeBoard board) {
-        // 1. if you have a winning move, then play it
-        Cell best = offense(player, board);
-        if (best != null) return best;
-        // 2. if opponent has a winning move, then block it
-        best = defense(player, board);
-        if (best != null) return best;
-        // 3. if you have a fork, then play it
-        // 4. if opponent has a fork, then block it
-        GameInfo gameInfo = ruleEngine.getInfo(board);
-        if (gameInfo.hasAFork()) {
-            best = gameInfo.getForkCell();
-            return best;
-        }
-        // 5. if the center is available, take it
-        if (board.getSymbol(1, 1) == null) {
-            return new Cell(1, 1);
-        }
-        // 6. if the corner is available, take it
-        int[][] corners = new int[][]{{0, 0}, {0, 2}, {2, 0}, {2, 2}};
-        for (int i = 0; i < 4; i++) {
-            if (board.getSymbol(corners[i][0], corners[i][1]) == null) {
-                return new Cell(corners[i][0], corners[i][1]);
+        Placement placement = OffensivePlacement.get();
+        while (placement.next() != null) {
+            Optional<Cell> place = placement.place(board, player);
+            if (place.isPresent()) {
+                return place.get();
             }
+            placement = placement.next();
         }
         return null;
     }
