@@ -22,6 +22,8 @@ public class AIEngine {
                 suggestion = getBasicMove(board1);
             } else if (countMoves(board1) < threshold + 1) {
                 suggestion = getCellToPlay(player, board1);
+            } else if (player.getTimeUsedInMillis() > 100000) {
+                suggestion = getBasicMove(board1);
             } else {
                 suggestion = getOptimalMove(player, board1);
             }

@@ -6,9 +6,18 @@ public class Game {
     Player winner;
     private GameConfig gameConfig;
     private Board board;
-    private int lastMoveTimeInMillis;
-    private int maxTimePerPlayer;
-    private int maxTimePerMove;
+    private Integer lastMoveTimeInMillis;
+    private Integer maxTimePerPlayer;
+    private Integer maxTimePerMove;
+
+    public Game(Player winner, GameConfig gameConfig, Board board, Integer maxTimePerPlayer, Integer lastMoveTimeInMillis, Integer maxTimePerMove) {
+        this.winner = winner;
+        this.gameConfig = gameConfig;
+        this.board = board;
+        this.maxTimePerPlayer = maxTimePerPlayer;
+        this.lastMoveTimeInMillis = lastMoveTimeInMillis;
+        this.maxTimePerMove = maxTimePerMove;
+    }
 
     public void move(Move move, int timestampInMillis) {
         int timeTakenSinceLastMove = timestampInMillis - lastMoveTimeInMillis;
@@ -21,26 +30,22 @@ public class Game {
     }
 
     private void moveForTimedGame(Move move, int timeTakenSinceLastMove) {
+        int currentTime, endTime;
         if (gameConfig.timePerMove != null) {
-            if (moveMadeInTime(timeTakenSinceLastMove)) {
-                board.move(move);
-            } else {
-                winner = move.getPlayer().flip();
-            }
+            currentTime = timeTakenSinceLastMove;
+            endTime = maxTimePerMove;
         } else {
-            if (moveMadeInTime(move.getPlayer())) {
-                board.move(move);
-            } else {
-                winner = move.getPlayer().flip();
-            }
+            currentTime = move.getPlayer().getTimeUsedInMillis();
+            endTime = maxTimePerPlayer;
+        }
+        if (currentTime < endTime) {
+            board.move(move);
+        } else {
+            winner = move.getPlayer().flip();
         }
     }
 
-    private boolean moveMadeInTime(int timeTakenSinceLastMove) {
-        return timeTakenSinceLastMove < maxTimePerMove;
-    }
-
-    private boolean moveMadeInTime(Player player) {
-        return player.getTimeUsedInMillis() < maxTimePerPlayer;
+    public void setConfig(GameConfig gameConfig) {
+        this.gameConfig = gameConfig;
     }
 }
