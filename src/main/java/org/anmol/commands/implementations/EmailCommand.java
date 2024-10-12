@@ -1,5 +1,6 @@
 package org.anmol.commands.implementations;
 
+import org.anmol.events.Event;
 import org.anmol.game.User;
 
 public class EmailCommand {
@@ -14,6 +15,10 @@ public class EmailCommand {
 
     public EmailCommand(NotificationDetails notificationDetails) {
         this.notificationDetails = notificationDetails;
+    }
+
+    public EmailCommand(Event event) {
+        this.notificationDetails = new NotificationDetails(event.getUser(), event.getMessage());
     }
 
     public NotificationDetails getNotificationDetails() {

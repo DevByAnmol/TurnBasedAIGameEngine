@@ -8,7 +8,8 @@ public class SMSService {
         // mail is sent here
     }
 
-    public void send(SMSCommand command) {
-        sendSMS(command.getNotificationDetails().getUser(), command.getNotificationDetails().getMessage());
+    public Void send(SMSCommand command) {
+        sendSMS(command.getUser(), command.getMessage());
+        return null;
     }
 }

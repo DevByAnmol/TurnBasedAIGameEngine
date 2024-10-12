@@ -1,5 +1,6 @@
 package org.anmol.commands.implementations;
 
+import org.anmol.events.Event;
 import org.anmol.game.User;
 
 public class SMSCommand {
@@ -16,7 +17,19 @@ public class SMSCommand {
         this.notificationDetails = notificationDetails;
     }
 
+    public SMSCommand(Event event) {
+        this.notificationDetails = new NotificationDetails(event.getUser(), event.getMessage());
+    }
+
     public NotificationDetails getNotificationDetails() {
         return notificationDetails;
+    }
+
+    public User getUser() {
+        return notificationDetails.getUser();
+    }
+
+    public String getMessage() {
+        return notificationDetails.getMessage();
     }
 }
