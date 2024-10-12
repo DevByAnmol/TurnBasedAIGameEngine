@@ -1,16 +1,18 @@
 package org.anmol.game;
 
+import org.anmol.api.RuleEngine;
 import org.anmol.boards.Board;
 
 public class Game {
     Player winner;
-    private GameConfig gameConfig;
+    private final GameConfig gameConfig;
     private Board board;
-    private Integer lastMoveTimeInMillis;
-    private Integer maxTimePerPlayer;
-    private Integer maxTimePerMove;
+    private final Integer lastMoveTimeInMillis;
+    private final Integer maxTimePerPlayer;
+    private final Integer maxTimePerMove;
+    private final RuleEngine ruleEngine = new RuleEngine();
 
-    public Game(Player winner, GameConfig gameConfig, Board board, Integer maxTimePerPlayer, Integer lastMoveTimeInMillis, Integer maxTimePerMove) {
+    public Game(Player winner, GameConfig gameConfig, Board board, Integer lastMoveTimeInMillis, Integer maxTimePerPlayer, Integer maxTimePerMove) {
         this.winner = winner;
         this.gameConfig = gameConfig;
         this.board = board;
@@ -20,32 +22,30 @@ public class Game {
     }
 
     public void move(Move move, int timestampInMillis) {
-        int timeTakenSinceLastMove = timestampInMillis - lastMoveTimeInMillis;
-        move.getPlayer().setTimeTaken(timeTakenSinceLastMove);
-        if (gameConfig.timed) {
-            moveForTimedGame(move, timeTakenSinceLastMove);
-        } else {
-            board.move(move);
+        if (winner == null) {
+            int timeTakenSinceLastMove = timestampInMillis - lastMoveTimeInMillis;
+            move.getPlayer().setTimeTaken(timeTakenSinceLastMove);
+            if (gameConfig.timed) {
+                moveForTimedGame(move, timeTakenSinceLastMove);
+            } else {
+                board = board.move(move);
+            }
+            if (winner == null && ruleEngine.getState(board).isOver()) {
+                winner = move.getPlayer();
+            }
         }
     }
 
     private void moveForTimedGame(Move move, int timeTakenSinceLastMove) {
-        int currentTime, endTime;
-        if (gameConfig.timePerMove != null) {
-            currentTime = timeTakenSinceLastMove;
-            endTime = maxTimePerMove;
-        } else {
-            currentTime = move.getPlayer().getTimeUsedInMillis();
-            endTime = maxTimePerPlayer;
-        }
-        if (currentTime < endTime) {
-            board.move(move);
+        if (move.getPlayer().getTimeUsedInMillis() < maxTimePerPlayer
+                && (gameConfig.timePerMove == null || timeTakenSinceLastMove < maxTimePerMove)) {
+            board = board.move(move);
         } else {
             winner = move.getPlayer().flip();
         }
     }
 
-    public void setConfig(GameConfig gameConfig) {
-        this.gameConfig = gameConfig;
+    public Player getWinner() {
+        return winner;
     }
 }

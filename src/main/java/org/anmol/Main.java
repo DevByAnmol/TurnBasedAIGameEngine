@@ -29,7 +29,7 @@ public class Main {
 
             int row = scanner.nextInt();
             int col = scanner.nextInt();
-            Move playerMove = new Move(new Cell(row, col), player);
+            Move playerMove = new Move(Cell.getCell(row, col), player);
             gameEngine.move(board, playerMove);
 
             System.out.println(board);
