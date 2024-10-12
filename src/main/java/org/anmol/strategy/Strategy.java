@@ -1,4 +1,4 @@
-package org.anmol.api;
+package org.anmol.strategy;
 
 import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.Cell;

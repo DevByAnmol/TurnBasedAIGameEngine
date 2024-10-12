@@ -1,5 +1,6 @@
-package org.anmol.api;
+package org.anmol.strategy;
 
+import org.anmol.api.RuleEngine;
 import org.anmol.boards.TicTacToeBoard;
 import org.anmol.game.Cell;
 import org.anmol.game.Move;

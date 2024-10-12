@@ -1,11 +1,14 @@
 package org.anmol.game;
 
+import java.util.concurrent.TimeUnit;
+
 public class Player {
     private int timeUsedInMillis;
-    private User id;
+    private User user;
     private String symbol;
 
     public Player(String symbol) {
+        this.user = new User();
         this.symbol = symbol;
     }
 
@@ -24,4 +27,10 @@ public class Player {
     public int getTimeUsedInMillis() {
         return timeUsedInMillis;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+
 }
