@@ -1,6 +1,5 @@
 package org.anmol.api;
 
-import org.anmol.boards.Board;
 import org.anmol.boards.CellBoard;
 import org.anmol.game.GameState;
 

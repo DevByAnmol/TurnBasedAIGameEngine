@@ -2,8 +2,10 @@ package org.anmol.api;
 
 import org.anmol.boards.Board;
 
-
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public class RuleSet<T extends Board> implements Iterable<Rule> {
